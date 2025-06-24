@@ -96,7 +96,7 @@ pipeline {
 
     post {
         always {
-            sh 'docker compose up'
+            sh 'docker compose up -d'
         }
     }
 }
