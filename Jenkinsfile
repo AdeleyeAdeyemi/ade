@@ -16,7 +16,24 @@ pipeline {
 
         stage('Run') {
             steps {
-                sh 'docker compose up -d'
+                script {
+                    def result = sh(script: 'docker compose up -d', returnStatus: true)
+                    if (result != 0) {
+                        sh 'docker compose logs'
+                        error "Docker compose failed to start containers"
+                    }
+                }
+            }
+        }
+
+        stage('Debug Docker Status') {
+            steps {
+                sh '''
+                    echo "Docker containers running:"
+                    docker ps
+                    echo "Docker logs for app container:"
+                    docker logs $(docker ps -q --filter "name=newnew-world_of_games2-1") || true
+                '''
             }
         }
 
@@ -33,10 +50,11 @@ pipeline {
                             break
                         } catch (Exception e) {
                             echo "App not ready yet, retrying in ${waitTime}s..."
-                            sleep waitTime
+                            sleep(waitTime)
                         }
                     }
                     if (!success) {
+                        sh 'docker logs $(docker ps -q --filter "name=newnew-world_of_games2-1") || true'
                         error "App did not become ready in time"
                     }
                 }
