@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/Undefinedboss/ubuntu_games'
+                git branch: 'main', url: 'https://github.com/Undefinedboss/ade'
             }
         }
 
