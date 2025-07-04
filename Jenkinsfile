@@ -67,7 +67,7 @@ pipeline {
                     def containerId = sh(script: "docker ps -q --filter 'name=newnew-world_of_games2-1'", returnStdout: true).trim()
 
                     for (int i = 0; i < maxRetries; i++) {
-                        def status = sh(script: "docker exec ${containerId} curl -sf http://localhost:8777 > /dev/null", returnStatus: true)
+                        def status = sh(script: "docker exec ${containerId} curl -sf http://localhost:8888 > /dev/null", returnStatus: true)
                         if (status == 0) {
                             success = true
                             break
