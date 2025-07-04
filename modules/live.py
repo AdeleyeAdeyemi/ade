@@ -1,6 +1,6 @@
 from modules.Memory_Game import Memory_Game
-from modules.Guess_Game import Guess_Game
-from modules.Currency_Roulette import Currency_Roulette
+from modules.Guess_Game import play as play_guess
+from modules.Currency_Roulette import play as play_currency
 
 
 def run_memory_game(level):
@@ -52,15 +52,15 @@ def main():
 
         if choice == '1':
             level = select_level("Memory Game")
-            run_memory_game(level)  # call the class-based Memory_Game
+            run_memory_game(level)
 
         elif choice == '2':
             level = select_level("Guess Game")
-            play_guess(level)  # assuming function play(level)
+            play_guess(level)
 
         elif choice == '3':
             level = select_level("Currency Roulette")
-            play_currency(level)  # assuming function play(level)
+            play_currency(level)
 
 
 if __name__ == "__main__":
