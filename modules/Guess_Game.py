@@ -32,9 +32,11 @@ class Guess_Game:
         else:
             print(f"Sorry, you lost! The correct number was {self.secret_number}.")
             return False
+
+def play(difficulty):
+    game = Guess_Game(difficulty)
+    return game.play()
+
 if __name__ == "__main__":
     difficulty = int(input("Enter the difficulty level (1-50): "))
-    game = Guess_Game(difficulty)
-    game.play()
-
-
+    play(difficulty)
