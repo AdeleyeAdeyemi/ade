@@ -1,6 +1,11 @@
-from modules.Memory_Game import play as play_memory
+from modules.Memory_Game import Memory_Game
 from modules.Guess_Game import play as play_guess
 from modules.Currency_Roulette import play as play_currency
+
+
+def run_memory_game(level):
+    game = Memory_Game(level)
+    return game.play()
 
 
 def welcome_message(name):
@@ -9,9 +14,9 @@ def welcome_message(name):
 
 def print_game_options(name):
     print(f"\nPlease press one of the following options to play, {name}:")
-    print("1 - Memory_Game")
-    print("2 - Guess_Game")
-    print("3 - Currency_Roulette")
+    print("1 - Memory Game")
+    print("2 - Guess Game")
+    print("3 - Currency Roulette")
     print("Q - Quit")
 
 
@@ -46,18 +51,17 @@ def main():
             continue
 
         if choice == '1':
-            level = select_level("Memory_Game")
-            play_memory(level)
+            level = select_level("Memory Game")
+            run_memory_game(level)  # call the class-based Memory_Game
 
         elif choice == '2':
-            level = select_level("Guess_Game")
-            play_guess(level)
+            level = select_level("Guess Game")
+            play_guess(level)  # assuming function play(level)
 
         elif choice == '3':
-            level = select_level("Currency_Roulette")
-            play_currency(level)
+            level = select_level("Currency Roulette")
+            play_currency(level)  # assuming function play(level)
 
 
 if __name__ == "__main__":
     main()
-
