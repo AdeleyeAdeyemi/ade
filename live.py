@@ -1,6 +1,6 @@
-from modules.memory_game import play as play_memory
-from modules.guess_game import play as play_guess
-from modules.currency_roulette_game import play as play_currency
+from modules.Memory_Game import play as play_memory
+from modules.Guess_Game import play as play_guess
+from modules.Currency_Roulette import play as play_currency
 
 
 
