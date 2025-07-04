@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 import time
 import sys
 
-def test_scores_service(url="http://localhost:8777"):
+def test_scores_service(url="http://localhost:8888"):
     try:
         options = Options()
         options.add_argument('--headless')  # Run Chrome in headless mode
