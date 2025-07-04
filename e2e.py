@@ -1,29 +1,39 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-import time
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import sys
 
 def test_scores_service(url="http://localhost:8888"):
+    driver = None
     try:
         options = Options()
         options.add_argument('--headless')  # Run Chrome in headless mode
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
-        
+
         driver = webdriver.Chrome(options=options)
         driver.get(url)
-        time.sleep(2)  # Let page load
 
-        score_element = driver.find_element(By.ID, "score")
+        # Wait up to 10 seconds for the element with id 'score' to appear
+        score_element = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "score"))
+        )
+
         score = int(score_element.text)
-
-        driver.quit()
         return 1 <= score <= 1000
 
     except Exception as e:
+        if driver:
+            print("Page source for debugging:")
+            print(driver.page_source[:500])  # Print first 500 chars
         print(f"Test failed: {e}")
         return False
+
+    finally:
+        if driver:
+            driver.quit()
 
 def main():
     result = test_scores_service()
