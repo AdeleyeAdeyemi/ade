@@ -7,7 +7,7 @@ class Memory_Game:
         self.sequence = []
 
     def generate_sequence(self):
-        self.sequence = [random.randint(1,101) for _ in range(self.difficulty)]
+        self.sequence = [random.randint(1, 101) for _ in range(self.difficulty)]
 
     def get_list_from_user(self):
         user_sequence = []
@@ -30,7 +30,7 @@ class Memory_Game:
         print("Remember the following sequence:")
         print(self.sequence)
         time.sleep(0.7)
-        print("\033[H\033[J")
+        print("\033[H\033[J")  # Clear screen
 
         user_sequence = self.get_list_from_user()
         if self.is_list_equal(user_sequence):
@@ -40,7 +40,10 @@ class Memory_Game:
             print(f"Sorry, you lost! The correct sequence was {self.sequence}.")
             return False
 
+def play(difficulty):
+    game = Memory_Game(difficulty)
+    return game.play()
+
 if __name__ == "__main__":
     difficulty = int(input("Enter the difficulty level (1-10): "))
-    game = Memory_Game(difficulty)
-    game.play()
+    play(difficulty)
