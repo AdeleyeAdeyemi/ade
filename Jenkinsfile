@@ -64,4 +64,41 @@ pipeline {
                     def maxRetries = 20
                     def waitTime = 6
                     def success = false
-                    def containerId = sh(script: "docker ps -q --filter 'name=newnew-world_of_games2-1'", returnSt
+                    def containerId = sh(script: "docker ps -q --filter 'name=newnew-world_of_games2-1'", returnStdout: true).trim()
+
+                    for (int i = 0; i < maxRetries; i++) {
+                        def status = sh(script: "docker exec ${containerId} curl -sf http://localhost:8777 > /dev/null", returnStatus: true)
+                        if (status == 0) {
+                            success = true
+                            break
+                        }
+                        echo "App not ready yet, retrying in ${waitTime}s..."
+                        sleep(waitTime)
+                    }
+                    if (!success) {
+                        sh "docker logs ${containerId} || true"
+                        error "App did not become ready in time"
+                    }
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh '''
+                    python3 -m venv myenv &&
+                    . myenv/bin/activate &&
+                    pip install --upgrade pip selenium &&
+                    python e2e.py
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker compose up -d'
+        }
+    }
+}
+
