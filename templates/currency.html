@@ -4,29 +4,30 @@
     <title>Currency Roulette</title>
 </head>
 <body>
-    <a href="/">Back Home</a>
+    <h1>Currency Roulette Game</h1>
 
     {% if step == 'difficulty' %}
-        <h1>Enter Difficulty Level (1-5)</h1>
         <form method="post">
             <input type="hidden" name="step" value="difficulty_submit">
+            <label>Choose difficulty (1 to 5):</label>
             <input type="number" name="difficulty" min="1" max="5" required>
-            <button type="submit">Start Game</button>
+            <button type="submit">Start</button>
         </form>
-
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
+    
     {% elif step == 'guess' %}
-        <h1>Guess the ILS value of {{ usd_amount }} USD</h1>
         <form method="post">
             <input type="hidden" name="step" value="guess_submit">
-            <input type="hidden" name="difficulty" value="{{ difficulty }}">
-            <input type="hidden" name="usd_amount" value="{{ usd_amount }}">
-            <input type="number" step="any" name="guess" required>
+            <p>Guess how much {{ usd_amount }} USD is in ILS:</p>
+            <input type="number" name="guess" step="0.01" required>
             <button type="submit">Submit Guess</button>
         </form>
 
     {% elif step == 'result' %}
-        <h1>{{ message }}</h1>
-        <a href="/currency">Play Again</a>
+        <p>{{ message }}</p>
+        <a href="{{ url_for('currency_roulette') }}">Play Again</a>
     {% endif %}
 </body>
 </html>
