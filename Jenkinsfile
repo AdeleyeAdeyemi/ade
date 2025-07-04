@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        APP_CONTAINER_NAME = 'world_of_games_app'  // Set your actual container name here
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -19,7 +23,7 @@ pipeline {
                 script {
                     def buildResult = sh(script: 'docker compose build --no-cache', returnStatus: true)
                     if (buildResult != 0) {
-                        sh 'docker compose logs'
+                        sh "docker compose logs ${env.APP_CONTAINER_NAME}"
                         error "Docker compose build failed"
                     }
                 }
@@ -31,7 +35,7 @@ pipeline {
                 script {
                     def upResult = sh(script: 'docker compose up -d', returnStatus: true)
                     if (upResult != 0) {
-                        sh 'docker compose logs'
+                        sh "docker compose logs ${env.APP_CONTAINER_NAME}"
                         error "Docker compose failed to start containers"
                     }
                 }
@@ -40,21 +44,21 @@ pipeline {
 
         stage('Debug Docker Status') {
             steps {
-                sh '''
+                sh """
                     echo "Docker containers running:"
                     docker ps
                     echo "Docker logs for app container:"
-                    docker logs $(docker ps -q --filter "name=newnew-world_of_games2-1") || true
-                '''
+                    docker logs \$(docker ps -q --filter "name=${APP_CONTAINER_NAME}") || true
+                """
             }
         }
 
         stage('Verify Flask Installation') {
             steps {
-                sh '''
+                sh """
                     echo "Installed Python packages inside the container:"
-                    docker exec $(docker ps -q --filter "name=newnew-world_of_games2-1") pip list || true
-                '''
+                    docker exec \$(docker ps -q --filter "name=${APP_CONTAINER_NAME}") pip list || true
+                """
             }
         }
 
@@ -64,7 +68,7 @@ pipeline {
                     def maxRetries = 20
                     def waitTime = 6
                     def success = false
-                    def containerId = sh(script: "docker ps -q --filter 'name=newnew-world_of_games2-1'", returnStdout: true).trim()
+                    def containerId = sh(script: "docker ps -q --filter 'name=${APP_CONTAINER_NAME}'", returnStdout: true).trim()
 
                     for (int i = 0; i < maxRetries; i++) {
                         def status = sh(script: "docker exec ${containerId} curl -sf http://localhost:8888 > /dev/null", returnStatus: true)
@@ -86,9 +90,9 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
-                    python3 -m venv myenv &&
-                    . myenv/bin/activate &&
-                    pip install --upgrade pip selenium &&
+                    python3 -m venv myenv && \
+                    source myenv/bin/activate && \
+                    pip install --upgrade pip selenium && \
                     python e2e.py
                 '''
             }
@@ -101,4 +105,3 @@ pipeline {
         }
     }
 }
-
