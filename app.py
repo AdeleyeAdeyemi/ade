@@ -5,7 +5,7 @@ app = Flask(__name__)
 app.secret_key = "your-secret-key"
 
 @app.route('/')
-def home():
+def index():
     return render_template('index.html')
 
 @app.route('/play/<game_name>')
