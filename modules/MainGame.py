@@ -1,4 +1,4 @@
-from live import welcome_message, print_game_option
+from modules.live import welcome_message, print_game_option
 from Currency_Roulette import Currency_Roulette_Game
 from Guess_Game import Guess_Game
 from Memory_Game import Memory_Game
