@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <title>Currency Roulette</title>
-</head>
+<html>
+<head><title>Currency Roulette</title></head>
 <body>
-    <h1>Currency Roulette</h1>
-    <p>Here will be your Currency Roulette interface.</p>
-    <a href="/">Back to main menu</a>
+  <h1>Enter Difficulty (1-5)</h1>
+  {% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
+  <form method="post">
+    <input type="number" name="difficulty" min="1" max="5" required>
+    <button type="submit">Start</button>
+  </form>
 </body>
 </html>
