@@ -1,27 +1,34 @@
+import sys
+import argparse
+import traceback
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import sys
 
-def test_scores_service(url="http://localhost:8888"):
+def test_scores_service(url="http://localhost:8888", timeout=10):
     driver = None
     try:
         options = Options()
-        options.add_argument('--headless')  # Run Chrome in headless mode
+        options.add_argument('--headless')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
 
         driver = webdriver.Chrome(options=options)
         driver.get(url)
 
-        # Wait up to 10 seconds for the element with id 'score' to appear
-        score_element = WebDriverWait(driver, 10).until(
+        score_element = WebDriverWait(driver, timeout).until(
             EC.presence_of_element_located((By.ID, "score"))
         )
 
-        score = int(score_element.text)
+        score_text = score_element.text.strip()
+        try:
+            score = int(score_text)
+        except ValueError:
+            print(f"Score value is not an integer: '{score_text}'")
+            return False
+
         return 1 <= score <= 1000
 
     except Exception as e:
@@ -29,6 +36,7 @@ def test_scores_service(url="http://localhost:8888"):
             print("Page source for debugging:")
             print(driver.page_source[:500])  # Print first 500 chars
         print(f"Test failed: {e}")
+        traceback.print_exc()
         return False
 
     finally:
@@ -36,7 +44,11 @@ def test_scores_service(url="http://localhost:8888"):
             driver.quit()
 
 def main():
-    result = test_scores_service()
+    parser = argparse.ArgumentParser(description="E2E test for scores service")
+    parser.add_argument("--url", default="http://localhost:8888", help="URL of the scores service")
+    args = parser.parse_args()
+
+    result = test_scores_service(url=args.url)
     if result:
         print("Test Passed")
         sys.exit(0)
