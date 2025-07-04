@@ -1,5 +1,4 @@
-from flask import Flask, render_template, redirect, url_for
-from modules import MainGame
+from flask import Flask, render_template, request, session, redirect, url_for
 
 app = Flask(__name__)
 app.secret_key = "your-secret-key"
@@ -8,22 +7,22 @@ app.secret_key = "your-secret-key"
 def index():
     return render_template('index.html')
 
-@app.route('/play/<game_name>')
-def play_game(game_name):
-    difficulty = 1  # You can later change this to allow user selection
-
-    if game_name.lower() == "memory":
-        MainGame.play_game(difficulty, "Memory Game")
-    elif game_name.lower() == "guess":
-        MainGame.play_game(difficulty, "Guess Game")
-    elif game_name.lower() == "roulette":
-        MainGame.play_game(difficulty, "Currency Roulette")
+@app.route('/play/guess', methods=['GET', 'POST'])
+def play_guess():
+    if request.method == 'POST':
+        user_guess = int(request.form['guess'])
+        answer = session.get('answer', 10)
+        if user_guess == answer:
+            message = "You won!"
+            session.pop('answer', None)
+        else:
+            message = "Try again."
+        return render_template('guess.html', message=message)
     else:
-        return f"Game '{game_name}' not found.", 404
-
-    return redirect(url_for('home'))
-
+        # Start new game
+        import random
+        session['answer'] = random.randint(1, 20)
+        return render_template('guess.html', message="Guess a number between 1 and 20.")
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8888)
-
