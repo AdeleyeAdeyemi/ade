@@ -1,42 +1,40 @@
-import sys
-import argparse
-import traceback
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import sys
+import re
 
-def test_scores_service(url="http://localhost:8888", timeout=10):
+def test_scores_service(url="http://localhost:8888"):
     driver = None
     try:
         options = Options()
-        options.add_argument('--headless')
+        options.add_argument('--headless')  # Run Chrome in headless mode
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
 
         driver = webdriver.Chrome(options=options)
         driver.get(url)
 
-        score_element = WebDriverWait(driver, timeout).until(
+        # Wait up to 10 seconds for the element with id 'score' to appear
+        score_element = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "score"))
         )
 
-        score_text = score_element.text.strip()
-        try:
-            score = int(score_text)
-        except ValueError:
-            print(f"Score value is not an integer: '{score_text}'")
-            return False
+        # Extract digits from the score text (e.g. "Score: 100")
+        digits = re.findall(r'\d+', score_element.text)
+        if not digits:
+            raise ValueError(f"No digits found in score text: '{score_element.text}'")
+        score = int(digits[0])
 
         return 1 <= score <= 1000
 
     except Exception as e:
         if driver:
             print("Page source for debugging:")
-            print(driver.page_source[:500])  # Print first 500 chars
+            print(driver.page_source[:500])  # Print first 500 characters
         print(f"Test failed: {e}")
-        traceback.print_exc()
         return False
 
     finally:
@@ -44,11 +42,7 @@ def test_scores_service(url="http://localhost:8888", timeout=10):
             driver.quit()
 
 def main():
-    parser = argparse.ArgumentParser(description="E2E test for scores service")
-    parser.add_argument("--url", default="http://localhost:8888", help="URL of the scores service")
-    args = parser.parse_args()
-
-    result = test_scores_service(url=args.url)
+    result = test_scores_service()
     if result:
         print("Test Passed")
         sys.exit(0)
