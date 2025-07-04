@@ -1,62 +1,65 @@
-from flask import Flask, request, render_template, session, redirect, url_for
-import random
+from flask import Flask, render_template, session, redirect, url_for, request
+import json
 
-app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  # Replace with a secure random key
+app = Flask(_name_)
+app.secret_key = 'supersecretkey'
 
-class CurrencyRouletteGame:
-    def __init__(self, difficulty):
-        self.difficulty = difficulty
-        self.usd_to_ils_rate = 3.7
+# Load products from JSON
+with open('products.json') as f:
+    products = json.load(f)
 
-    def get_money_interval(self, usd_amount):
-        margin = 5 - self.difficulty
-        return (
-            usd_amount * self.usd_to_ils_rate - margin,
-            usd_amount * self.usd_to_ils_rate + margin
-        )
+@app.route('/')
+def index():
+    return render_template('index.html', products=products)
 
-@app.route('/currency', methods=['GET', 'POST'])
-def currency_roulette():
-    if request.method == 'POST':
-        step = request.form.get('step')
+@app.route('/product/<int:product_id>')
+def product_detail(product_id):
+    product = next((p for p in products if p['id'] == product_id), None)
+    if not product:
+        return "Product not found", 404
+    return render_template('product.html', product=product)
 
-        if step == 'difficulty_submit':
-            difficulty = request.form.get('difficulty')
-            if difficulty and difficulty.isdigit():
-                difficulty = int(difficulty)
-                if 1 <= difficulty <= 5:
-                    usd_amount = random.randint(1, 100)
-                    session['difficulty'] = difficulty
-                    session['usd_amount'] = usd_amount
-                    return redirect(url_for('currency_roulette'))
-            return render_template('currency.html', step='difficulty', error='Please enter a number from 1 to 5.')
+@app.route('/add_to_cart/<int:product_id>', methods=['POST'])
+def add_to_cart(product_id):
+    quantity = int(request.form.get('quantity', 1))
+    if 'cart' not in session:
+        session['cart'] = {}
+    cart = session['cart']
 
-        elif step == 'guess_submit':
-            try:
-                difficulty = int(session.get('difficulty'))
-                usd_amount = float(session.get('usd_amount'))
-                guess = float(request.form.get('guess'))
-            except (TypeError, ValueError):
-                return redirect(url_for('currency_roulette'))
+    if str(product_id) in cart:
+        cart[str(product_id)] += quantity
+    else:
+        cart[str(product_id)] = quantity
 
-            game = CurrencyRouletteGame(difficulty)
-            low, high = game.get_money_interval(usd_amount)
+    session['cart'] = cart
+    return redirect(url_for('cart'))
 
-            if low <= guess <= high:
-                message = f"🎉 Congrats! Your guess is correct. The value was between {low:.2f} and {high:.2f} ILS."
-            else:
-                message = f"❌ Sorry, wrong guess. The correct value was between {low:.2f} and {high:.2f} ILS."
+@app.route('/cart')
+def cart():
+    cart = session.get('cart', {})
+    cart_items = []
+    total = 0
+    for pid, qty in cart.items():
+        product = next((p for p in products if p['id'] == int(pid)), None)
+        if product:
+            item_total = product['price'] * qty
+            total += item_total
+            cart_items.append({
+                'product': product,
+                'quantity': qty,
+                'total': item_total
+            })
+    return render_template('cart.html', cart_items=cart_items, total=total)
 
-            return render_template('currency.html', step='result', message=message)
+@app.route('/checkout')
+def checkout():
+    # Simple placeholder page
+    return render_template('checkout.html')
 
-    # GET request or after POST redirects
-    if 'difficulty' in session and 'usd_amount' in session:
-        return render_template('currency.html', step='guess',
-                               difficulty=session['difficulty'],
-                               usd_amount=session['usd_amount'])
+@app.route('/clear_cart')
+def clear_cart():
+    session.pop('cart', None)
+    return redirect(url_for('index'))
 
-    return render_template('currency.html', step='difficulty')
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8888)
+if _name_ == '_main_':
+    app.run(debug=True, host='0.0.0.0', port=8888)
