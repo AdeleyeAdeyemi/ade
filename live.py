@@ -1,86 +1,53 @@
 def welcome_message(name):
-   return "Hello(name) welcome to your world of Games"
-name =input("insert name")
-print("Hello",name," welcome to your World of Games")
-print("Here you can find many cool games go play", name)
+    return f"Hello {name}, welcome to your World of Games!"
 
-def print_game_option():
-   print("Please press the following option to World Of Games", name)
-   print("1 Memory_Game")
-   print("2 Guess_Game")
-   print("3 Currency_Roulette")
-while True:
-    choice=input("Select a game(1/2/3):")
-    if choice in ("1","2","3"):
-        try:
-            print("Game loading")
-        except valueError:
-            print("Invalid input")
+def print_game_options(name):
+    print(f"\nPlease press one of the following options to play, {name}:")
+    print("1 - Memory_Game")
+    print("2 - Guess_Game")
+    print("3 - Currency_Roulette")
+    print("Q - Quit")
+
+def select_level(game_name):
+    print(f"\nWelcome to your {game_name}!")
+    print("Please select your difficulty level:")
+    for i in range(1, 6):
+        print(f"Level {i}")
+    while True:
+        level = input("Select your level (1-5): ")
+        if level in ['1', '2', '3', '4', '5']:
+            print(f"Level {level} {game_name} loading...")
+            return int(level)
+        else:
+            print("Invalid input! Please enter a number between 1 and 5.")
+
+def main():
+    name = input("Insert your name: ")
+    print(welcome_message(name))
+
+    while True:
+        print_game_options(name)
+        choice = input("Select a game (1/2/3) or Q to quit: ").strip().upper()
+
+        if choice == 'Q':
+            print(f"Goodbye, {name}! Thanks for playing.")
+            break
+
+        if choice not in ('1', '2', '3'):
+            print("Invalid choice! Please select 1, 2, 3, or Q to quit.")
             continue
-    if choice == "1":
-         print("Welcome to your Memory_Game",name)
-         print( "Please select your level", name)
-         print("level 1")
-         print("level 2")
-         print("level 3")
-         print("level 4")
-         print("level 5")
 
-         while True:
-             choice=input("select your level(1/2/3/4/5):")
-             if choice=="1":
-                print("level 1 Memory_Game loading")
-             elif choice=="2":
-                print("level 2 Memory_Game loading")
-             elif choice == "3":
-                print("level 2 Memory_Game loading")
-             elif choice == "4":
-                print("level 4 Memory_Game loading")
-             elif choice == "5":
-                print("level 5 Memory_Game loading")
-                break
-    elif choice == "2":
-         print("Welcome to your Guess_Game", name)
-         print("Please select your level", name)
-         print("level 1")
-         print("level 2")
-         print("level 3")
-         print("level 4")
-         print("level 5")
+        if choice == '1':
+            level = select_level("Memory_Game")
+            # call your Memory_Game here
 
-         while True:
-             choice = input("select your level(1/2/3/4/5):")
-             if choice == "1":
-                print("level 1 Guess_Game loading")
-             elif choice == "2":
-                print("level 2 Guess_Game loading")
-             elif choice == "3":
-                print("level 2 Guess_Game loading")
-             elif choice == "4":
-                print("level 4 Guess_Game loading")
-             elif choice == "5":
-                print("level 5 Guess_Game loading")
-                break
+        elif choice == '2':
+            level = select_level("Guess_Game")
+            # call your Guess_Game here
 
-    elif choice == "3":
-         print("Welcome to your Currency_Roulette", name)
-         print("Please select your level", name)
-         print("level 1")
-         print("level 2")
-         print("level 3")
-         print("level 4")
-         print("level 5")
+        elif choice == '3':
+            level = select_level("Currency_Roulette")
+            # call your Currency_Roulette_Game here
 
-         while True:
-             choice = input("select your level(1/2/3/4/5):")
-             if choice == "1":
-                print("level 1 Currency_Roulette loading")
-             elif choice == "2":
-                print("level 2 Currency_Roulette loading")
-             elif choice == "3":
-                print("level 2 Currency_Roulette loading")
-             elif choice == "4":
-                print("level 4 Currency_Roulette loading")
-             elif choice == "5":
-                print("level 5 Currency_Roulette loading")
-                break
+if __name__ == "__main__":
+    main()
