@@ -1,6 +1,6 @@
 from modules.Memory_Game import Memory_Game
-from modules.Guess_Game import play as play_guess
-from modules.Currency_Roulette import play as play_currency
+from modules.Guess_Game import Guess_Game
+from modules.Currency_Roulette import Currency_Roulette
 
 
 def run_memory_game(level):
