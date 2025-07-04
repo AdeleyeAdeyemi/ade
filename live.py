@@ -1,6 +1,7 @@
-from games.memory_game import play as play_memory
-from games.guess_game import play as play_guess
-from games.currency_roulette_game import play as play_currency
+from modules.memory_game import play as play_memory
+from modules.guess_game import play as play_guess
+from modules.currency_roulette_game import play as play_currency
+
 
 
 def welcome_message():
