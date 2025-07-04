@@ -1,5 +1,11 @@
+from modules.memory_game import play as play_memory
+from modules.guess_game import play as play_guess
+from modules.currency_roulette_game import play as play_currency
+
+
 def welcome_message(name):
     return f"Hello {name}, welcome to your World of Games!"
+
 
 def print_game_options(name):
     print(f"\nPlease press one of the following options to play, {name}:")
@@ -7,6 +13,7 @@ def print_game_options(name):
     print("2 - Guess_Game")
     print("3 - Currency_Roulette")
     print("Q - Quit")
+
 
 def select_level(game_name):
     print(f"\nWelcome to your {game_name}!")
@@ -20,6 +27,7 @@ def select_level(game_name):
             return int(level)
         else:
             print("Invalid input! Please enter a number between 1 and 5.")
+
 
 def main():
     name = input("Insert your name: ")
@@ -39,15 +47,17 @@ def main():
 
         if choice == '1':
             level = select_level("Memory_Game")
-            # call your Memory_Game here
+            play_memory(level)
 
         elif choice == '2':
             level = select_level("Guess_Game")
-            # call your Guess_Game here
+            play_guess(level)
 
         elif choice == '3':
             level = select_level("Currency_Roulette")
-            # call your Currency_Roulette_Game here
+            play_currency(level)
+
 
 if __name__ == "__main__":
     main()
+
