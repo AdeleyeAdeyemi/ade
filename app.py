@@ -19,5 +19,5 @@ def currency_roulette():
     return render_template('currency.html')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=8777)
 
