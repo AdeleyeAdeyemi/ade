@@ -66,7 +66,7 @@ pipeline {
                     def success = false
                     for (int i = 0; i < maxRetries; i++) {
                         try {
-                            sh 'curl -sf http://localhost:8777 > /dev/null'
+                            sh 'curl -sf http://localhost:8888 > /dev/null'
                             success = true
                             break
                         } catch (Exception e) {
