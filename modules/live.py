@@ -1,4 +1,4 @@
-from modules.memory_game import play as play_memory
+from modules.Memory_game import play as play_memory
 from modules.guess_game import play as play_guess
 from modules.currency_roulette_game import play as play_currency
 
