@@ -9,6 +9,6 @@ COPY templates ./templates
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 8777
+EXPOSE 8888
 
 CMD ["python", "app.py"]
