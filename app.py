@@ -1,8 +1,7 @@
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, request, render_template
 import random
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  # Add secret key for session support
 
 class CurrencyRouletteGame:
     def __init__(self, difficulty):
@@ -15,40 +14,49 @@ class CurrencyRouletteGame:
 
 @app.route('/currency', methods=['GET', 'POST'])
 def currency_roulette():
-    if request.method == 'POST':
-        if 'difficulty' not in session:
-            # First form submission: user sends difficulty
-            try:
-                difficulty = int(request.form['difficulty'])
-                if not 1 <= difficulty <= 5:
-                    raise ValueError()
-            except ValueError:
-                return render_template('currency.html', error="Enter difficulty 1-5")
-            
-            session['difficulty'] = difficulty
-            session['usd_amount'] = random.randint(1, 100)
-            return render_template('currency_guess.html', usd_amount=session['usd_amount'])
-        
+    if request.method == 'GET':
+        # Show difficulty input
+        return render_template('currency.html', step='difficulty')
+
+    step = request.form.get('step')
+
+    if step == 'difficulty_submit':
+        # User submitted difficulty, generate USD amount and show guess form
+        difficulty = request.form.get('difficulty')
+        if difficulty and difficulty.isdigit():
+            difficulty = int(difficulty)
+            usd_amount = random.randint(1, 100)
+            return render_template('currency.html', step='guess', difficulty=difficulty, usd_amount=usd_amount)
         else:
-            # Second form submission: user sends guess
-            try:
-                guess = float(request.form['guess'])
-            except ValueError:
-                return render_template('currency_guess.html', usd_amount=session['usd_amount'], error="Invalid guess")
+            return render_template('currency.html', step='difficulty')
 
-            game = CurrencyRouletteGame(session['difficulty'])
-            interval = game.get_money_interval(session['usd_amount'])
+    elif step == 'guess_submit':
+        # User submitted guess, check it and show result
+        difficulty = request.form.get('difficulty')
+        usd_amount = request.form.get('usd_amount')
+        guess = request.form.get('guess')
 
-            if interval[0] <= guess <= interval[1]:
-                result = f"Congrats! Your guess was correct. The value was between {interval[0]:.2f} and {interval[1]:.2f}."
-            else:
-                result = f"Sorry, wrong guess. The value was between {interval[0]:.2f} and {interval[1]:.2f}."
+        try:
+            difficulty = int(difficulty)
+            usd_amount = float(usd_amount)
+            guess = float(guess)
+        except (ValueError, TypeError):
+            return render_template('currency.html', step='difficulty')
 
-            session.pop('difficulty')
-            session.pop('usd_amount')
-            return render_template('currency_result.html', result=result)
-    
-    # GET request: show difficulty input form and clear session
-    session.pop('difficulty', None)
-    session.pop('usd_amount', None)
-    return render_template('currency.html')
+        game = CurrencyRouletteGame(difficulty)
+        interval = game.get_money_interval(usd_amount)
+
+        if interval[0] <= guess <= interval[1]:
+            message = f"Congrats! Your guess is correct. The value was between {interval[0]:.2f} and {interval[1]:.2f}."
+        else:
+            message = f"Sorry, wrong guess. The value was between {interval[0]:.2f} and {interval[1]:.2f}."
+
+        return render_template('currency.html', step='result', message=message)
+
+    else:
+        # Default fallback: show difficulty input
+        return render_template('currency.html', step='difficulty')
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8777)
+
