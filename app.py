@@ -1,8 +1,11 @@
 from flask import Flask, render_template, session, redirect, url_for, request
 import json
+import logging
 
-app = Flask(_name_)
+app = Flask(__name__)
 app.secret_key = 'supersecretkey'
+
+logging.basicConfig(level=logging.DEBUG)
 
 # Load products from JSON
 with open('products.json') as f:
@@ -53,7 +56,6 @@ def cart():
 
 @app.route('/checkout')
 def checkout():
-    # Simple placeholder page
     return render_template('checkout.html')
 
 @app.route('/clear_cart')
@@ -61,5 +63,6 @@ def clear_cart():
     session.pop('cart', None)
     return redirect(url_for('index'))
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8888)
+
