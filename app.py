@@ -4,7 +4,7 @@ import random
 # Import your game classes from modules folder
 from modules.Guess_Game import Guess_Game
 from modules.Memory_Game import MemoryGame
-from modules.Currency_Roulette import CurrencyRouletteGame
+from modules.Currency_Roulette import Currency_Roulette_Game
 
 app = Flask(__name__)
 app.secret_key = "your-secret-key"
