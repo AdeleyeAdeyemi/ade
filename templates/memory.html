@@ -6,7 +6,21 @@
 </head>
 <body>
     <h1>Memory Game</h1>
-    <p>Here will be your Memory Game interface.</p>
+
+    <p>{{ message or "Try to memorize the sequence!" }}</p>
+
+    {% if not game_over %}
+        <form method="post">
+            <label for="user_sequence">Enter the sequence:</label>
+            <input type="text" id="user_sequence" name="user_sequence" required>
+            <button type="submit">Submit</button>
+        </form>
+    {% else %}
+        <p>Game Over! {{ message }}</p>
+        <a href="{{ url_for('memory_game') }}">Play Again</a>
+    {% endif %}
+
+    <br>
     <a href="/">Back to main menu</a>
 </body>
 </html>
