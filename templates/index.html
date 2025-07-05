@@ -6,12 +6,12 @@
 </head>
 <body>
     <h1>Welcome to World of Games</h1>
-    <div id="score">Score: 100</div> <!-- ✅ Add this -->
+    <div id="score">Score: 100</div>
     <p>Select a game to play:</p>
     <ul>
-        <li><a href="/memory">Memory_Game</a></li>
-        <li><a href="/guess">Guess_Game</a></li>
-        <li><a href="/currency">Currency_Roulette</a></li>
+        <li><a href="{{ url_for('play_memory') }}">Memory_Game</a></li>
+        <li><a href="{{ url_for('play_guess') }}">Guess_Game</a></li>
+        <li><a href="{{ url_for('play_currency') }}">Currency_Roulette</a></li>
     </ul>
 </body>
 </html>
