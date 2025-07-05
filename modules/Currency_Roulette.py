@@ -1,6 +1,6 @@
 import random
 
-class Currency_Roulette_Game:
+class CurrencyRouletteGame:
     def __init__(self, difficulty):
         self.difficulty = difficulty
         self.usd_to_ils_rate = None
