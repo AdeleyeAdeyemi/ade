@@ -3,7 +3,7 @@ import random
 
 # Import your game classes from modules folder
 from modules.Guess_Game import Guess_Game
-from modules.memory_game import MemoryGame
+from modules.Memory_Game import MemoryGame
 from modules.currency_roulette import CurrencyRouletteGame
 
 app = Flask(__name__)
