@@ -106,7 +106,7 @@ def currency_roulette():
             return render_template('currency.html', step='difficulty', error=error)
 
         # Use your CurrencyRouletteGame logic here
-        game = CurrencyRouletteGame(difficulty)
+        game = Currency_Roulette_Game(difficulty)
         usd_to_ils_rate = game.get_current_usd_to_ils_rate()
         total_value = usd_amount * usd_to_ils_rate
         margin = 5 - difficulty
