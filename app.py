@@ -1,5 +1,9 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 import random
+import logging
+import logstash
+import os
+
 
 # Import your game classes from modules folder
 from modules.Guess_Game import Guess_Game
@@ -8,6 +12,12 @@ from modules.Currency_Roulette import Currency_Roulette_Game
 
 app = Flask(__name__)
 app.secret_key = "your-secret-key"
+
+ELK_HOST = os.environ.get('ELK_HOST', 'logstash')
+LOGGER = logging.getLogger('python-logstash-logger')
+LOGGER.setLevel(logging.INFO)
+LOGGER.addHandler(logstash.TCPLogstashHandler(ELK_HOST, 5044, version=1))
+
 
 # --- Home route ---
 @app.route('/')
@@ -129,6 +139,7 @@ def currency_roulette():
 if __name__ == '__main__':
     port = int(os.getenv("FLASK_RUN_PORT", 8777))  # Read port from environment
     app.run(debug=True, host='0.0.0.0', port=port)
+
 
 
 
