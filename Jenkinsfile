@@ -1,9 +1,7 @@
 pipeline {
     agent any
-    
-     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
-        IMAGE_NAME = "yourusername/world_of_games2"
+
+    environment {
         IMAGE_TAG = "latest"
     }
 
@@ -23,44 +21,47 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    def buildResult = sh(script: 'docker compose build -t world_of_games2:latest', returnStatus: true)
+                    def buildResult = sh(script: 'docker build -t world_of_games2:latest .', returnStatus: true)
                     if (buildResult != 0) {
-                        sh 'docker compose logs'
-                        error "Docker compose build failed"
+                        sh 'docker logs $(docker ps -q --filter "name=world_of_games2") || true'
+                        error "Docker build failed"
                     }
                 }
             }
         }
+
         stage('Verify Image') {
             steps {
-                script {
-                    // Lightweight check: Python version and installed packages
-                    sh '''
-                        docker run --rm world_of_games2:latest python3 --version
-                        docker run --rm world_of_games2:latest pip list
-                    '''
-                    
-                }
+                sh '''
+                    docker run --rm world_of_games2:latest python3 --version
+                    docker run --rm world_of_games2:latest pip list
+                '''
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', 
+                                                 usernameVariable: 'DOCKER_USER', 
+                                                 passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
-                        echo $PASS | docker login -u $USER --password-stdin
-                        docker tag world_of_games2:latest $IMAGE_NAME:$IMAGE_TAG
-                        docker push $IMAGE_NAME:$IMAGE_TAG
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        docker tag world_of_games2:latest $DOCKER_USER/world_of_games2:$IMAGE_TAG
+                        docker push $DOCKER_USER/world_of_games2:$IMAGE_TAG
                     '''
-
-        
-                    }
                 }
             }
         }
+
         stage('Archive Artifacts') {
             steps {
                 archiveArtifacts artifacts: '**/*.py', fingerprint: true
+            }
+        }
+
+        stage('Run Containers') {
+            steps {
+                sh 'docker compose up -d'
             }
         }
 
@@ -70,53 +71,47 @@ pipeline {
                     echo "Docker containers running:"
                     docker ps
                     echo "Docker logs for app container:"
-                    docker logs $(docker ps -q --filter "name=newnew-world_of_games2-1") || true
+                    docker logs world_of_games2 || true
                 '''
             }
         }
 
         stage('Verify Flask Installation') {
             steps {
-                sh '''
-                    echo "Installed Python packages inside the container:"
-                    docker exec $(docker ps -q --filter "name=newnew-world_of_games2-1") pip list || true
-                '''
+                sh 'docker exec world_of_games2 pip list || true'
             }
         }
 
-        stage('Wait for app') {
+        stage('Wait for App') {
             steps {
                 script {
                     def maxRetries = 20
                     def waitTime = 6
                     def success = false
                     for (int i = 0; i < maxRetries; i++) {
-                        try {
-                            sh 'curl -sf http://localhost:8888 > /dev/null'
+                        def result = sh(script: 'curl -sf http://localhost:8888 || echo "fail"', returnStdout: true).trim()
+                        if (result != 'fail') {
                             success = true
                             break
-                        } catch (Exception e) {
-                            echo "App not ready yet, retrying in ${waitTime}s..."
-                            sleep(waitTime)
                         }
+                        echo "App not ready yet, retrying in ${waitTime}s..."
+                        sleep(waitTime)
                     }
                     if (!success) {
-                        sh 'docker logs $(docker ps -q --filter "name=newnew-world_of_games2-1") || true'
+                        sh 'docker logs world_of_games2 || true'
                         error "App did not become ready in time"
                     }
                 }
             }
         }
+
         stage('Test Container Environment') {
-                steps {
-                    sh '''
-                        docker run --rm world_of_games2:latest python3 -m pip install --upgrade pip selenium
-                    '''
+            steps {
+                sh 'docker run --rm world_of_games2:latest python3 -m pip install --upgrade pip selenium'
             }
         }
-    }
 
-        stage('Test') {
+        stage('Test on Jenkins Agent') {
             steps {
                 sh '''
                     python3 -m venv myenv &&
@@ -129,8 +124,8 @@ pipeline {
 
     post {
         always {
-            sh 'docker compose up -d'
+            echo "Cleaning up containers..."
+            sh 'cd "$WORKSPACE" && docker compose down -v || true'
         }
     }
 }
-
