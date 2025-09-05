@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   world_of_games2:
+    container_name: world_of_games2
     build: .
     ports:
       - "${APP_PORT:-8888}:8888"
@@ -13,5 +14,6 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8888"]
       interval: 10s
       retries: 10
+
 
 
