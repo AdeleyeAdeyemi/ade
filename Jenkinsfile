@@ -1,5 +1,11 @@
 pipeline {
     agent any
+    
+     environment {
+        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials')
+        IMAGE_NAME = "yourusername/world_of_games2"
+        IMAGE_TAG = "latest"
+    }
 
     stages {
         stage('Checkout') {
@@ -17,7 +23,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    def buildResult = sh(script: 'docker compose build --no-cache', returnStatus: true)
+                    def buildResult = sh(script: 'docker compose build -t world_of_games2:latest', returnStatus: true)
                     if (buildResult != 0) {
                         sh 'docker compose logs'
                         error "Docker compose build failed"
@@ -25,16 +31,36 @@ pipeline {
                 }
             }
         }
-
-        stage('Run Containers') {
+        stage('Verify Image') {
             steps {
                 script {
-                    def upResult = sh(script: 'docker compose up -d', returnStatus: true)
-                    if (upResult != 0) {
-                        sh 'docker compose logs'
-                        error "Docker compose failed to start containers"
+                    // Lightweight check: Python version and installed packages
+                    sh '''
+                        docker run --rm world_of_games2:latest python3 --version
+                        docker run --rm world_of_games2:latest pip list
+                    '''
+                    
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh '''
+                        echo $PASS | docker login -u $USER --password-stdin
+                        docker tag world_of_games2:latest $IMAGE_NAME:$IMAGE_TAG
+                        docker push $IMAGE_NAME:$IMAGE_TAG
+                    '''
+
+        
                     }
                 }
+            }
+        }
+        stage('Archive Artifacts') {
+            steps {
+                archiveArtifacts artifacts: '**/*.py', fingerprint: true
             }
         }
 
@@ -81,6 +107,14 @@ pipeline {
                 }
             }
         }
+        stage('Test Container Environment') {
+                steps {
+                    sh '''
+                        docker run --rm world_of_games2:latest python3 -m pip install --upgrade pip selenium
+                    '''
+            }
+        }
+    }
 
         stage('Test') {
             steps {
@@ -99,3 +133,4 @@ pipeline {
         }
     }
 }
+
