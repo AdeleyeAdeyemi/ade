@@ -11,7 +11,8 @@ from modules.Memory_Game import MemoryGame
 from modules.Currency_Roulette import Currency_Roulette_Game
 
 app = Flask(__name__)
-app.secret_key = "your-secret-key"
+app.config['SECRET_KEY'] = 'some-secret-key'
+
 
 ELK_HOST = os.environ.get('ELK_HOST', 'logstash')
 LOGGER = logging.getLogger('python-logstash-logger')
@@ -138,7 +139,8 @@ def currency_roulette():
 
 if __name__ == '__main__':
     port = int(os.getenv("FLASK_RUN_PORT", 8777))  # Read port from environment
-    app.run(debug=True, host='0.0.0.0', port=port)
+    app.run(debug=True, host='0.0.0.0', port=8888)
+
 
 
 
