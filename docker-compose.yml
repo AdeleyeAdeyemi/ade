@@ -8,7 +8,6 @@ services:
       FLASK_RUN_HOST: 0.0.0.0
       FLASK_RUN_PORT: 8888
     volumes:
-      - ./Scores.txt:/app/Scores.txt:ro
       - ./templates:/app/templates:ro
       - ./modules:/app/modules:ro
     healthcheck:
@@ -16,5 +15,6 @@ services:
       interval: 10s
       retries: 15
       start_period: 10s
+
 
 
