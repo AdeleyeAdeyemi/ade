@@ -27,7 +27,9 @@ def score_server():
         """
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8777)
+    port = int(os.getenv("FLASK_RUN_PORT", 8777))  # Read port from environment
+    app.run(host='0.0.0.0', port=port)
+
 
 
 
