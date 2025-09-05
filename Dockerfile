@@ -9,6 +9,7 @@ COPY app.py .
 COPY modules ./modules
 COPY templates ./templates
 
-EXPOSE 8888
+EXPOSE 8777
 CMD ["python", "app.py"]
+
 
