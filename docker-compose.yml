@@ -1,19 +1,19 @@
-version: '3.8'
-
 services:
   world_of_games2:
     container_name: world_of_games2
     build: .
     ports:
       - "${APP_PORT:-8888}:8888"
+    environment:
+      FLASK_RUN_HOST: 0.0.0.0
+      FLASK_RUN_PORT: 8888
     volumes:
       - ./Scores.txt:/app/Scores.txt:ro
       - ./templates:/app/templates:ro
       - ./modules:/app/modules:ro
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8888"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8888 || exit 1"]
       interval: 10s
-      retries: 10
-
-
+      retries: 15
+      start_period: 10s
 
