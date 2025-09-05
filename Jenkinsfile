@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/Undefinedboss/ade'
+                git branch: 'main', url: 'https://github.com/AdeleyeAdeyemi/ade'
             }
         }
 
@@ -129,3 +129,4 @@ pipeline {
         }
     }
 }
+
