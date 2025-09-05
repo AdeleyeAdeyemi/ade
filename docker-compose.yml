@@ -5,11 +5,11 @@ services:
     container_name: world_of_games2
     build: .
     ports:
-      - "8888:8777"
+      - "8888:8888"
     environment:
       - ELK_HOST=logstash
       - FLASK_RUN_HOST=0.0.0.0
-      - FLASK_RUN_PORT=8777
+      - FLASK_RUN_PORT=8888
     volumes:
       - ./Scores.txt:/app/Scores.txt:rw
       - ./templates:/app/templates:ro
@@ -72,6 +72,7 @@ services:
       interval: 30s
       retries: 10
       start_period: 20s
+
 
 
 
