@@ -15,7 +15,8 @@ services:
       - ./templates:/app/templates:ro
       - ./modules:/app/modules:ro
     depends_on:
-      - logstash
+      logstash:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8777 || exit 1"]
@@ -31,6 +32,9 @@ services:
       - "9600:9600"
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
     restart: unless-stopped
 
   elasticsearch:
@@ -44,6 +48,10 @@ services:
       - "9200:9200"
       - "9300:9300"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200 || exit 1"]
+      interval: 30s
+      retries: 10
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.15.0
@@ -53,8 +61,13 @@ services:
     ports:
       - "5601:5601"
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601 || exit 1"]
+      interval: 30s
+      retries: 10
 
 
 
