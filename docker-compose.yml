@@ -4,13 +4,14 @@ services:
   world_of_games2:
     build: .
     ports:
-      - "${APP_PORT:-8888}:8888"   
+      - "${APP_PORT:-8888}:8888"
     volumes:
       - ./Scores.txt:/app/Scores.txt:ro
       - ./templates:/app/templates:ro
       - ./modules:/app/modules:ro
-   healthcheck:
+    healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8888"]
       interval: 10s
       retries: 10
+
 
