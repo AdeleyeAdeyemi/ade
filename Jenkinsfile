@@ -59,9 +59,9 @@ pipeline {
             }
         }
 
-        stage('Run Containers') {
+        stage('Run Container') {
             steps {
-                sh 'docker compose up -d'
+                sh 'docker compose up -d world_of_games2'
             }
         }
 
@@ -70,7 +70,7 @@ pipeline {
                 sh '''
                     echo "Docker containers running:"
                     docker ps
-                    echo "Docker logs for app container:"
+                    echo "Docker logs for world_of_games2:"
                     docker logs world_of_games2 || true
                 '''
             }
@@ -124,8 +124,8 @@ pipeline {
 
     post {
         always {
-            echo "Cleaning up containers..."
-            sh 'cd "$WORKSPACE" && docker compose down -v || true'
+            echo "Skipping container cleanup to keep world_of_games2 alive."
+             // sh 'cd /var/lib/jenkins/workspace/new && docker compose down -v'  // commented out
         }
     }
 }
