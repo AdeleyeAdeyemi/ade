@@ -3,7 +3,7 @@ services:
     container_name: world_of_games2
     build: .
     ports:
-      - "8777:8777"
+     - "${APP_PORT}:8777"
     environment:
       FLASK_RUN_HOST: 0.0.0.0
       FLASK_RUN_PORT: 8777
@@ -16,6 +16,7 @@ services:
       interval: 10s
       retries: 15
       start_period: 10s
+
 
 
 
