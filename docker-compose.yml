@@ -1,15 +1,14 @@
-version: '3.8'
+version: '3.9'
 
 services:
   world_of_games2:
     container_name: world_of_games2
     build: .
     ports:
-      - "8888:8888"
+      - "8888:8777"
     environment:
       - ELK_HOST=logstash
-      - FLASK_RUN_HOST=0.0.0.0
-      - FLASK_RUN_PORT=8888
+      - FLASK_RUN_PORT=8777
     volumes:
       - ./Scores.txt:/app/Scores.txt:rw
       - ./templates:/app/templates:ro
@@ -21,8 +20,8 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8777 || exit 1"]
       interval: 10s
-      retries: 15
-      start_period: 10s
+      retries: 10
+      start_period: 5s
 
   logstash:
     image: docker.elastic.co/logstash/logstash:8.15.0
@@ -72,17 +71,3 @@ services:
       interval: 30s
       retries: 10
       start_period: 20s
-
-
-
-
-
-
-
-
-
-
-
-
-
-
