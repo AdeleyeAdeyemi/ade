@@ -114,8 +114,8 @@ pipeline {
         stage('Test on Jenkins Agent') {
             steps {
                 sh '''
-                    python3 -m venv myenv &&
-                    . myenv/bin/activate &&
+                    python3 -m venv myenv
+                    . myenv/bin/activate
                     pip install --upgrade pip selenium
                 '''
             }
