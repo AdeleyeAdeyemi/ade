@@ -6,7 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import sys
 import re
 
-def test_scores_service(url="http://localhost:8888"):
+def test_scores_service(url="http://localhost:8777"):
     driver = None
     try:
         options = Options()
@@ -52,3 +52,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
