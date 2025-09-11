@@ -136,11 +136,16 @@ def currency_roulette():
 
     # Default: show difficulty selection form
     return render_template('currency.html', step='difficulty')
+    
+@app.route('/health')
+def health():
+    return {"status": "ok"}, 200
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8777, debug=False)
 
     
+
 
 
 
