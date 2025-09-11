@@ -89,7 +89,7 @@ pipeline {
                     def waitTime = 6
                     def success = false
                     for (int i = 0; i < maxRetries; i++) {
-                        def result = sh(script: 'curl -sf http://localhost:8888 || echo "fail"', returnStdout: true).trim()
+                        def result = sh(script: 'curl -sf http://localhost:8777 || echo "fail"', returnStdout: true).trim()
                         if (result != 'fail') {
                             success = true
                             break
@@ -129,4 +129,5 @@ pipeline {
         }
     }
 }
+
 
