@@ -138,8 +138,9 @@ def currency_roulette():
     return render_template('currency.html', step='difficulty')
 
 if __name__ == '__main__':
-    port = int(os.getenv("FLASK_RUN_PORT", 8888))  # Read port from environment
+    port = int(os.getenv("FLASK_RUN_PORT", 8777))  # Read port from environment
     app.run(debug=True, host='0.0.0.0', port=port)
+
 
 
 
